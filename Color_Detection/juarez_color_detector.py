@@ -35,8 +35,7 @@ class HSVColorParam:
         self.close_kernel = np.ones((x, x), np.uint8)
 
 def findLargestContourFromMask(mask, min_area=300):
-    # TODO This line changes if using opencv 3.x.x
-    contours, _ = cv2.findContours(mask.copy(), cv2.RETR_LIST, 
+    _, contours, _ = cv2.findContours(mask.copy(), cv2.RETR_LIST, 
                                       cv2.CHAIN_APPROX_SIMPLE)
 
     largest_i = None

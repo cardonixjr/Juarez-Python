@@ -26,7 +26,7 @@ class JuarezHeadTracker:
 
     def _init_motion(self):
         dm.initMotionManager()
-        dm.playMotion(1)
+        dm.playMotion(51)
 
         dm.headMoveToHome()
 
