@@ -5,6 +5,8 @@ import sys
 sys.path.append("/home/juarez/Darwin-Python/Color_Detection")
 from juarez_color_detector import *
 
+DEFAULT_CONFIG = "/home/juarez/Darwin-tools/Data/config.ini"
+
 class JuarezHeadTracker:
     def __init__(self, color_file, debug=False):
         # Keeps track of what should be printed
@@ -25,8 +27,8 @@ class JuarezHeadTracker:
         self.cap = cv2.VideoCapture(0)
 
     def _init_motion(self):
-        dm.initMotionManager()
-        dm.playMotion(51)
+        dm.initMotionManager(DEFAULT_CONFIG)
+        dm.playMotion(52)
 
         dm.headMoveToHome()
 
@@ -39,7 +41,9 @@ class JuarezHeadTracker:
         dist_x = self.IMG_WIDTH/2. - pos[0]
         dist_y = self.IMG_HEIGHT/2. - pos[1]
 
-        if self.debug: print(dist_x, dist_y)
+        if self.debug: 
+            print(dist_x, dist_y)
+            print("Pan: {} Tilt: {}".format(cur_pan, cur_tilt))
 
         new_pan = cur_pan + (dist_x * self.STEP_SIZE)
         new_tilt = cur_tilt + (dist_y * self.STEP_SIZE)

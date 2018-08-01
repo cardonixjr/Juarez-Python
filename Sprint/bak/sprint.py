@@ -8,7 +8,7 @@ MAX_P = 15
 MAX_X_SPEED = 15 # Max linear velocity
 UPDATE_RATE = 3 # Number of ticks
 UPDATE_STEP = 0.5 # Increment in speed each update
-CROSSED_LINE_OBJ_SIZE = 22500
+CROSSED_LINE_OBJ_SIZE = 129000
 
 CONFIG_INI = "/home/juarez/Darwin-Python/Sprint/sprint.ini"
 
@@ -27,7 +27,6 @@ dm.playMotion(51)
 dm.headMoveToHome()
 dm.headMoveByAngle(0.0, 105.0)
 dm.walkSetPeriodTime(580.0)
-dm.walkSetXOffset(-6.5) # Walk forward X offset
 
 dm.walkPrintParams()
 
@@ -75,15 +74,15 @@ while True:
         if area > CROSSED_LINE_OBJ_SIZE:
             # Changing State
             current_state = States.RUNNING_BACKWARDS
-            dm.walkSetXOffset(-8.0)
+            #dm.walkSetZOffset(40.0)
             #dm.walkSetPeriodTime(550.0)
             dm.walkStop()
             sleep(0.2)
 
     elif current_state == States.RUNNING_BACKWARDS:
         print("walk backwards")
-        dm.walkSetVelocities(-8.0, 0.0, 0.0)
-        if p > 15.0 or p < -15.0:
+        dm.walkSetVelocities(-8.0, -1.0, -7.5)
+        if p > 15.0 or p < -12.0:
             current_state = States.BACKWARDS_RECENTER
 
         dm.walkStart()
@@ -94,7 +93,7 @@ while True:
             dm.walkSetVelocities(-1.0, 0.0, 7.0)
         elif p < -1.0:
             print(p)
-            dm.walkSetVelocities(-1.0, 0.0, -7.0)
+            dm.walkSetVelocities(-1.0, 0.0, -15.0)
         else:
             current_state = States.RUNNING_BACKWARDS
 
