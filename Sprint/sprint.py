@@ -13,25 +13,21 @@ CROSSED_LINE_OBJ_SIZE = 22500
 CONFIG_INI = "/home/juarez/Darwin-Python/Sprint/sprint.ini"
 
 class States:
-    RUNNING_FORWARD = 0
-    RUNNING_BACKWARDS = 1
-    BACKWARDS_RECENTER = 2
+    INIT = -1
+    READY = 0
+    RUNNING_FORWARD = 1
+    RUNNING_BACKWARDS = 2
+    BACKWARDS_RECENTER = 3
+    FINISHED = 4
+
+class Button:
+    START = 2
+    RESET = 1
+    NONE = 0
 
 tracker = JHT(sys.argv[1])
 
 dm.initMotionManager(CONFIG_INI)
-
-# Walk ready pose
-dm.playMotion(51)
-
-dm.headMoveToHome()
-dm.headMoveByAngle(0.0, 105.0)
-dm.walkSetPeriodTime(580.0)
-dm.walkSetXOffset(-6.5) # Walk forward X offset
-
-dm.walkPrintParams()
-
-sleep(5)
 
 def updateLinearSpeed(cur_speed):
     if cur_speed >= MAX_X_SPEED:
@@ -39,12 +35,36 @@ def updateLinearSpeed(cur_speed):
     else:
         return cur_speed + UPDATE_STEP
 
-current_state = States.RUNNING_FORWARD
-ticks = 0
-x_speed = 0.0 # Initial linear walking speed
+state = States.INIT
 while True:
-    obj = tracker.getObj()
+    btn = dm.getButton()
+    if btn == Button.RESET: state = States.INIT
 
+    if state == States.INIT:
+        print("Init.")
+        dm.walkStop()
+        sleep(3) # Gambiarra pull up
+
+        #dm.reinitializeMotionManager(CONFIG_INI)
+        # Walk ready pose
+        dm.playMotion(51)
+
+        dm.headMoveToHome()
+        dm.headMoveByAngle(0.0, 105.0)
+        dm.walkSetPeriodTime(580.0)
+        dm.walkSetXOffset(-6.5) # Walk forward X offset
+
+        ticks = 0
+        x_speed = 0.0
+        dm.walkPrintParams()
+
+        state = States.READY
+
+    elif state == States.READY:
+        print("Ready.")
+        if btn == Button.START: state = States.RUNNING_FORWARD
+
+    obj = tracker.getObj()
     if obj is not None:
         pos, area = obj
         p, t = tracker.centerHeadToPoint(pos)
@@ -56,7 +76,7 @@ while True:
         print("Object not detected this iteration.")
         continue # Skip this loop
 
-    if current_state == States.RUNNING_FORWARD:
+    if state == States.RUNNING_FORWARD:
         print("walk forward")
         if ticks % UPDATE_RATE == 0:
             x_speed = updateLinearSpeed(x_speed)
@@ -74,30 +94,27 @@ while True:
 
         if area > CROSSED_LINE_OBJ_SIZE:
             # Changing State
-            current_state = States.RUNNING_BACKWARDS
+            state = States.RUNNING_BACKWARDS
             dm.walkSetXOffset(-8.0)
-            #dm.walkSetPeriodTime(550.0)
             dm.walkStop()
-            sleep(0.2)
+            sleep(1)
 
-    elif current_state == States.RUNNING_BACKWARDS:
+    elif state == States.RUNNING_BACKWARDS:
         print("walk backwards")
         dm.walkSetVelocities(-8.0, 0.0, 0.0)
         if p > 15.0 or p < -15.0:
-            current_state = States.BACKWARDS_RECENTER
+            state = States.BACKWARDS_RECENTER
 
         dm.walkStart()
 
-    elif current_state == States.BACKWARDS_RECENTER:
+    elif state == States.BACKWARDS_RECENTER:
         print("backwards recenter")
-        if p > 5.0:
+        if p > 1.5:
             dm.walkSetVelocities(-1.0, 0.0, 7.0)
-        elif p < -1.0:
-            print(p)
+        elif p < -1.5:
             dm.walkSetVelocities(-1.0, 0.0, -7.0)
         else:
-            current_state = States.RUNNING_BACKWARDS
-
+            state = States.RUNNING_BACKWARDS
 
     print(ticks)
     print(x_speed)

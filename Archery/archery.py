@@ -28,18 +28,23 @@ tracker = JHT(sys.argv[1])
 
 # Load motion manager with archery walking offsets
 
+dm.initMotionManager(WALKING_INI)
+
 state = States.INIT
 while True:
     # Get button states
     btn = dm.getButton()
     # If reset button is pressed change state back to init state
-    if btn == Button.RESET: state = States.INIT
+    if btn == Button.RESET: 
+        dm.walkStop()
+        dm.motionLoadINI(WALKING_INI)
+        state = States.INIT
 
     if state == States.INIT:
         print("Init.")
         sleep(2)
         # Sets up robot initial robot. This state is run only once. 
-        dm.initMotionManager(WALKING_INI)
+        dm.walkLoadINI(WALKING_INI)
 
         dm.playMotion(52) # Bow Walk ready motion
         dm.headMoveToHome()
