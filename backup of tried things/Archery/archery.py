@@ -7,8 +7,8 @@ from head_tracker import JuarezHeadTracker as JHT
 WALKING_INI = "/home/juarez/Darwin-Python/Archery/walking_archery.ini"
 MOTION_INI = "/home/juarez/Darwin-Python/Archery/motion_archery.ini"
 
-SHOOTING_PAN = 76.25
-LOOK_STEP = 1.5
+SHOOTING_PAN = 71.00
+LOOK_STEP = 0.5
 
 class States:
     INIT = -1
@@ -55,6 +55,7 @@ while True:
     elif state == States.READY:
         print("Ready.")
         # Wait for the start button press
+
         if btn == Button.START: state = States.TRACK_TARGET
 
     # Look for target
@@ -75,9 +76,9 @@ while True:
             cur_pan = dm.headGetPan()
             cur_tilt = dm.headGetTilt()
 
-            if cur_pan > 100:
+            if cur_pan > 45:
                 look_dir = 0
-            elif cur_pan < -100:
+            elif cur_pan < -45:
                 look_dir = 1
 
             if look_dir == 1:
@@ -97,7 +98,7 @@ while True:
             dm.headMoveByAngle(p, t)
 
             # Rotate body until pan angle matches shooting angle
-            dm.walkSetVelocities(0.0, 0.0, -8.0)
+            dm.walkSetVelocities(-1.5, 0.0, -8.0)
             dm.walkStart()
 
             # STATE CHANGE
@@ -111,6 +112,7 @@ while True:
                 state = States.SHOOT
         else:
             # Go back to search target
+            dm.walkStop()
             state = States.TRACK_TARGET
 
     elif state == States.SHOOT:

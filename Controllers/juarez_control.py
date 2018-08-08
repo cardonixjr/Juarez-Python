@@ -9,8 +9,10 @@ DELTA_VEL = 0.5
 pygame.init()
 screen = pygame.display.set_mode((300, 300))
 
+CONFIG_INI = "/home/juarez/Darwin-tools/Data/config.ini"
+
 # Sets up all the Action, Walking, Head and Motion Manager
-dm.initMotionManager()
+dm.initMotionManager(CONFIG_INI)
 
 # Stand up in a nice motion
 dm.playMotion(51)
@@ -44,6 +46,10 @@ while True:
                 A_AMPLITUDE += DELTA_VEL
             elif event.key == K_e:
                 A_AMPLITUDE -= DELTA_VEL
+            elif event.key == K_z:
+                X_AMPLITUDE = 0.0
+                Y_AMPLITUDE = 0.0
+                A_AMPLITUDE = 0.0
 
     keys = pygame.key.get_pressed()
 

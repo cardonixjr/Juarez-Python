@@ -2,16 +2,20 @@ import sys
 import cv2
 import numpy as np
 import os
-from juarez_color_detector import SingleColorDetection
+from juarez_color_detector import *
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python {} <color_save_file>".format(sys.argv[0]))
+    if len(sys.argv) != 3:
+        print("Usage: python {} <mode> <color_save_file>".format(sys.argv[0]))
         sys.exit(1)
 
-    filename = sys.argv[1]
+    mode = sys.argv[1]
+    filename = sys.argv[2]
 
-    detector = SingleColorDetection(calibrateMode=True)
+    if mode == "Single":
+        detector = SingleColorDetection(calibrateMode=True)
+    elif mode == "Sprint":
+        detector = SprintColorDetection(calibrateMode=True)
 
     if os.path.isfile(filename):
         print("Loading parameters from {}".format(filename))
@@ -23,15 +27,19 @@ if __name__ == "__main__":
         ret, frame = cap.read()
 
         obj_pos = detector.detectFromRGB(frame)
-        cv2.circle(frame, obj_pos, 3, (0, 0, 255), -1)
+
+        if obj_pos != None:
+            if obj_pos[0] != None: # Gambiarra
+                cv2.circle(frame, (int(obj_pos[0]), int(obj_pos[1])), 3, (0, 0, 255), -1)
+
         cv2.imshow("Original", frame)
 
         k = cv2.waitKey(1) & 0xFF
         if k == ord('q'):
             break
         elif k == ord('r'):
-            detector.loadParameters(sys.argv[1])
+            detector.loadParameters(filename)
         elif k == ord('s'):
-            detector.saveParameters(sys.argv[1])
+            detector.saveParameters(filename)
 
 cv2.destroyAllWindows()

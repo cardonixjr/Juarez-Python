@@ -7,8 +7,10 @@ from time import sleep
 pygame.init()
 screen = pygame.display.set_mode((300, 300))
 
+CONFIG_INI = "/home/juarez/Darwin-tools/Data/config.ini"
+
 # Sets up all the Action, Walking, Head and Motion Manager
-dm.initMotionManager()
+dm.initMotionManager(CONFIG_INI)
 
 # Stand up in a nice motion
 dm.playMotion(16)
@@ -49,5 +51,8 @@ while True:
         dm.headMoveToHome()
     else:
         dm.headMoveByAngle(cur_pan + pan_i, cur_tilt + tilt_i)
+
+
+    print("Tilt:", dm.headGetTilt(), "Pan:", dm.headGetPan())
 
     sleep(0.01)

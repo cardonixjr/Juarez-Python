@@ -8,7 +8,7 @@ from juarez_color_detector import *
 DEFAULT_CONFIG = "/home/juarez/Darwin-tools/Data/config.ini"
 
 class JuarezHeadTracker:
-    def __init__(self, color_file, debug=False):
+    def __init__(self, color_file, mode, debug=False):
         # Keeps track of what should be printed
         self.debug = debug
 
@@ -20,7 +20,15 @@ class JuarezHeadTracker:
         self.STEP_SIZE = 0.01
 
         # Create detector object and load color parameters from file
-        self.detector = SingleColorDetection(calibrateMode=False)
+        if mode == "single":
+            self.mode = "single"
+            print("Single color mode detector.")
+            self.detector = SingleColorDetection(calibrateMode=False)
+        elif mode == "sprint":
+            self.mode = "sprint"
+            print("Sprint mode detector.")
+            self.detector = SprintColorDetection(calibrateMode=False)
+
         self.detector.loadParameters(color_file)
 
         # Setup OpenCV video Capture
@@ -50,10 +58,20 @@ class JuarezHeadTracker:
 
         return new_pan, new_tilt
 
-    def getObj(self):
+    def getObj(self, return_frame=False):
         ret, frame = self.cap.read()
 
-        return self.detector.detectFromRGB(frame, return_area=True)
+        if self.mode == "single":
+            if return_frame:
+                return self.detector.detectFromRGB(frame, return_area=True), frame
+            else:
+                return self.detector.detectFromRGB(frame, return_area=True)
+
+        elif self.mode == "sprint":
+            if return_frame:
+                return self.detector.detectFromRGB(frame, area=300), frame
+            else:
+                return self.detector.detectFromRGB(frame, area=300)
 
     def run(self):
         self._init_motion()
@@ -86,5 +104,5 @@ if __name__ == "__main__":
         print("Usage: python {} <color_parameters_file>".format(sys.argv[0]))
         sys.exit(1)
 
-    juarez_ht = JuarezHeadTracker(sys.argv[1], debug=True)
+    juarez_ht = JuarezHeadTracker(sys.argv[1], "single", debug=True)
     juarez_ht.run()
