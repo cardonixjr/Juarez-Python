@@ -1,11 +1,12 @@
 import darwin_motions as dm
 from time import sleep
 import sys
-sys.path.append('..')
+sys.path.append('../..')
 from head_tracker import JuarezHeadTracker as JHT
+import os
 
-WALKING_INI = "/home/juarez/Darwin-Python/Archery/walking_archery.ini"
-MOTION_INI = "/home/juarez/Darwin-Python/Archery/motion_archery.ini"
+WALKING_INI = os.path.abspath("walking_archery.ini")
+MOTION_INI = os.path.abspath("motion_archery.ini")
 
 SHOOTING_PAN = 71.00
 LOOK_STEP = 0.5
@@ -24,7 +25,7 @@ class Button:
     NONE = 0
 
 # Load tracker with .json color from command line
-tracker = JHT(sys.argv[1])
+tracker = JHT(mode='single', sys.argv[1])
 
 # Load motion manager with archery walking offsets
 

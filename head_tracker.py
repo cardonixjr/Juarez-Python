@@ -8,7 +8,7 @@ from juarez_color_detector import *
 DEFAULT_CONFIG = "/home/juarez/Darwin-tools/Data/config.ini"
 
 class JuarezHeadTracker:
-    def __init__(self, color_file, mode, debug=False):
+    def __init__(self, color_file, mode, step_size=0.01, debug=False):
         # Keeps track of what should be printed
         self.debug = debug
 
@@ -17,7 +17,7 @@ class JuarezHeadTracker:
         self.IMG_HEIGHT = 480
 
         # Increment in head joints position
-        self.STEP_SIZE = 0.01
+        self.STEP_SIZE = step_size
 
         # Create detector object and load color parameters from file
         if mode == "single":

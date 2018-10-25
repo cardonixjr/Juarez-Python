@@ -170,7 +170,7 @@ class TargetInfo:
         self.y_amplitude = highest_Y - lowest_Y
 
 # Load tracker with .json color from command line
-tracker = JHT(sys.argv[1], mode='single')
+tracker = JHT(sys.argv[1], step_size=0.01, mode='single')
 
 # Load motion manager with archery walking offsets
 

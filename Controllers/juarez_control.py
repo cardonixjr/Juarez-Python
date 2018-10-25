@@ -51,7 +51,33 @@ while True:
                 Y_AMPLITUDE = 0.0
                 A_AMPLITUDE = 0.0
 
+            elif event.key == K_t:
+                dm.playMotion(111)
+
     keys = pygame.key.get_pressed()
+
+    cur_pan = dm.headGetPan()
+    cur_tilt = dm.headGetTilt()
+    
+    # Amount to increment in each angle
+    tilt_i = 0
+    pan_i = 0
+    mod = 1
+    if keys[K_LSHIFT]:
+        mod = 0.25
+    if keys[K_j]:
+        tilt_i += -1 * mod
+    if keys[K_u]:
+        tilt_i += +1 * mod
+    if keys[K_h]:
+        pan_i += 1 * mod
+    if keys[K_k]:
+        pan_i += -1 * mod
+
+    if keys[K_o]:
+        dm.headMoveToHome()
+    else:
+        dm.headMoveByAngle(cur_pan +pan_i, cur_tilt + tilt_i)
 
     dm.walkSetVelocities(X_AMPLITUDE, Y_AMPLITUDE, A_AMPLITUDE)
     print("X: {}, Y: {}, A: {}".format(X_AMPLITUDE, Y_AMPLITUDE, A_AMPLITUDE))
